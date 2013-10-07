@@ -40,7 +40,7 @@ public static synchronized void store(Path localFilePath) throws SocketException
 			return;
 		}
 		
-		ftp.login("muth.inc", "gx88sodw");
+		ftp.login("muth.inc", "********");
 		ftp.setFileType(FTP.BINARY_FILE_TYPE);
 		ftp.enterLocalPassiveMode();
 		
