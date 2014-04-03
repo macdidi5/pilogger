@@ -11,19 +11,19 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
 public class UploadFTP {
-	private static final String HOSTNAME = "xx.xx.xx";
+	private static final String HOSTNAME = "xxx";
 
-	public static synchronized void store(Path localFilePath) {
+	public static synchronized boolean store(Path localFilePath) {
 		FTPClient ftp = new FTPClient();
 		try {
 			ftp.connect(HOSTNAME);
 			
 			if (! FTPReply.isPositiveCompletion(  ftp.getReplyCode() )) {
 				ftp.disconnect();
-				return;
+				return false;
 			}
 
-			ftp.login("xxx", "yyy");
+			ftp.login("xxx", "xxx");
 			ftp.setFileType(FTP.BINARY_FILE_TYPE);
 			ftp.enterLocalPassiveMode();
 
@@ -31,8 +31,10 @@ public class UploadFTP {
 			ftp.storeFile("pilogger/" + localFilePath.getFileName(), input);
 			ftp.logout();
 			ftp.disconnect();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		} finally {
 			if(ftp.isConnected()) {
 				try {
