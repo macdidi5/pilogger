@@ -1,19 +1,22 @@
 package pilogger;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketException;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimerTask;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
-public class UploadFTP {
-	private static final String HOSTNAME = "xxx";
+public class UploadFTP extends TimerTask{
+	private static final String HOSTNAME = "****.***.fr";
 
-	public static synchronized boolean store(Path localFilePath) {
+	public static synchronized boolean store(File localFile) {
 		FTPClient ftp = new FTPClient();
 		try {
 			ftp.connect(HOSTNAME);
@@ -23,17 +26,16 @@ public class UploadFTP {
 				return false;
 			}
 
-			ftp.login("xxx", "xxx");
+			ftp.login("****", "****");
 			ftp.setFileType(FTP.BINARY_FILE_TYPE);
 			ftp.enterLocalPassiveMode();
 
-			InputStream input = new FileInputStream(localFilePath.toFile());
-			ftp.storeFile("pilogger/" + localFilePath.getFileName(), input);
+			InputStream input = new FileInputStream(localFile);
+			ftp.storeFile("pilogger/" + localFile.getName(), input);
 			ftp.logout();
 			ftp.disconnect();
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		} finally {
 			if(ftp.isConnected()) {
@@ -46,5 +48,34 @@ public class UploadFTP {
 		}
 
 	}
+	
+	@Override
+	public void run() {
+		File directory = new File(ProbeManager.onlineFileLocalDirectory);
+		File[] files = directory.listFiles();
+		int i = 0;
+		try {
+			System.out.print(new SimpleDateFormat(PiloggerGUI.DATE_PATERN).format(new Date())+", "+files.length+" FTP Uploads: ");
+			
+			for (i = 0; i < files.length; i++) {
+				System.out.print(".");
+				boolean success = UploadFTP.store(files[i]);
+				if (!success) {
+					System.out.println(new SimpleDateFormat(PiloggerGUI.DATE_PATERN).format(new Date())+
+							": Fail FTP upload"+ files[i].getName());
+				}
+				Thread.sleep(500);
+			}
+			System.out.print("\n");
+			
+		} catch (InterruptedException e) {
+			System.out.println(new SimpleDateFormat(PiloggerGUI.DATE_PATERN).format(new Date())+
+					": Fail FTP upload at "+i+":"+ files[i].getName());
+		}
+
+
+	}
+
+
 
 }
