@@ -13,9 +13,9 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
 public class UploadFTP extends TimerTask{
-	private static final String HOSTNAME = "xxx.xx.xx";
-	private static final String LOGIN = "xxx";
-	private static final String PWD = "xxx";
+	private static final String HOSTNAME = "ftpperso.free.fr";
+	private static final String LOGIN = "xxxxxxxx";
+	private static final String PWD = "xxxxxxxx";
 
 	public static synchronized boolean store(File localFile) {
 		FTPClient ftp = new FTPClient();
@@ -59,15 +59,13 @@ public class UploadFTP extends TimerTask{
 //			System.out.print(new SimpleDateFormat(PiloggerGUI.DATE_PATERN).format(new Date())+": "+files.length+" FTP Uploads: ");
 			
 			for (i = 0; i < files.length; i++) {
-//				System.out.print(".");
-				boolean success = UploadFTP.store(files[i]);
-				if (!success) {
-					System.out.println(new SimpleDateFormat(PiloggerGUI.DATE_PATERN).format(new Date())+
-							": Fail FTP "+ files[i].getName());
+				if ( !files[i].isDirectory() ) {
+					boolean success = UploadFTP.store(files[i]);
+					if (!success) System.out.println( new SimpleDateFormat(PiloggerGUI.DATE_PATERN).format(new Date())+
+								": Fail FTP "+ files[i].getName());
 				}
 				Thread.sleep(500);
 			}
-//			System.out.print(" [ Ok ]\n");
 			
 		} catch (InterruptedException e) {
 			System.out.println(new SimpleDateFormat(PiloggerGUI.DATE_PATERN).format(new Date())+
